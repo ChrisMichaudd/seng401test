@@ -27,12 +27,8 @@ export default async function Home() {
         </div>
 
         {/* “Continue as Guest” below, in gray text */}
-        <Button
-          asChild
-          variant="ghost"
-          className="mt-2 text-gray-500"
-        >
-          <Link href="/guest">Continue as Guest</Link>
+        <Button asChild variant="ghost" className="mt-2 text-gray-500">
+          <Link href="/meal-plan">Continue as Guest</Link>
         </Button>
       </main>
     </>
