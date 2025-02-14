@@ -1,3 +1,4 @@
+//initial starting page for the website
 import Hero from "@/components/hero";
 import ConnectSupabaseSteps from "@/components/tutorial/connect-supabase-steps";
 import SignUpUserSteps from "@/components/tutorial/sign-up-user-steps";
@@ -26,12 +27,8 @@ export default async function Home() {
         </div>
 
         {/* “Continue as Guest” below, in gray text */}
-        <Button
-          asChild
-          variant="ghost"
-          className="mt-2 text-gray-500"
-        >
-          <Link href="/guest">Continue as Guest</Link>
+        <Button asChild variant="ghost" className="mt-2 text-gray-500">
+          <Link href="/meal-plan">Continue as Guest</Link>
         </Button>
       </main>
     </>
