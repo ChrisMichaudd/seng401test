@@ -1,3 +1,4 @@
+//handles metadata for webpage, may have to interact with it throughout your development but not a directly rendered page
 import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
