@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client"; // Ensure this works on the client side
+import ReactMarkdown from "react-markdown";
 
 export default function MealPlanPage() {
   const [prompt, setPrompt] = useState("");
@@ -57,9 +58,9 @@ export default function MealPlanPage() {
       {/* Display the Generated Meal Plan */}
       {mealPlan && (
         <div className="mt-4 p-4 border rounded bg-gray-100">
-          <h2 className="font-semibold">Meal Plan:</h2>
-          <p>{mealPlan}</p>
-        </div>
+        <h2 className="font-semibold">Meal Plan:</h2>
+        <ReactMarkdown>{mealPlan}</ReactMarkdown>
+      </div>
       )}
     </div>
   );
