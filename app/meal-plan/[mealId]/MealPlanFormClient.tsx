@@ -8,7 +8,8 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import NordicWalkingIcon from '@mui/icons-material/NordicWalking';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import { TrendingDown, MinusCircle } from "lucide-react";
+import { TrendingDown, MinusCircle, Loader2, ChefHat } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Define the shape of our "meal_plans" row
 interface MealPlanData {
@@ -46,6 +47,7 @@ interface MealPlanFormClientProps {
 
 export default function MealPlanFormClient({ mealId, initialData }: MealPlanFormClientProps) {
   const supabase = createClient();
+  const router = useRouter();
 
   // Local state for the form
   const [formData, setFormData] = useState<MealPlanData>({
@@ -173,7 +175,9 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     return { isValid: true, firstMissingField: null };
   };
 
-  // Modify the handler for the Generate Plan button
+  // Add loading state
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const handleGeneratePlan = async () => {
     // First, save current form data
     const weightInKg = weightUnit === 'lbs' && formData.weight 
@@ -201,7 +205,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       return;
     }
 
-    // Now proceed with validation and generation
+    // Validate required fields
     const { isValid, firstMissingField } = validateRequiredFields();
     
     if (!isValid && firstMissingField) {
@@ -215,9 +219,47 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       return;
     }
 
-    // If valid, log the data
-    console.log('Meal Plan Data:', JSON.stringify(formData, null, 2));
-    setStatusMessage("All required fields are filled. Ready to generate plan!");
+    // If valid, call Gemini API
+    try {
+      setIsGenerating(true);
+      setStatusMessage("Generating your meal plan...");
+      
+      const response = await fetch('/api/gemini/meal-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          weight: weightInKg,
+          height: heightInCm,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate meal plan');
+      
+      const { mealPlan } = await response.json();
+      
+      // Save the AI response to the database
+      const { error: updateError } = await supabase
+        .from("meal_plans")
+        .update({ ai_return: mealPlan })
+        .eq("meal_id", mealId)
+        .single();
+
+      if (updateError) {
+        console.error("Error saving AI response:", updateError);
+        setStatusMessage("Generated plan but failed to save. Please try again.");
+        return;
+      }
+
+      // Redirect to the view page
+      router.push(`/meal-plan/${mealId}/view`);
+      
+    } catch (error) {
+      console.error('Error:', error);
+      setStatusMessage("Failed to generate meal plan. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -592,7 +634,17 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
             ? 'bg-red-50 text-red-700 border-red-200'
             : 'bg-green-50 text-green-700 border-green-200'
         }`}>
-          {statusMessage}
+          <div className="flex items-center justify-center gap-2">
+            {isGenerating ? (
+              <>
+                <ChefHat className="w-5 h-5 animate-bounce" />
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Cooking up your personalized meal plan...</span>
+              </>
+            ) : (
+              <span>{statusMessage}</span>
+            )}
+          </div>
         </div>
       )}
     </form>
