@@ -1,10 +1,8 @@
 //initial starting page for the website
 import Hero from "@/components/hero";
-import ConnectSupabaseSteps from "@/components/tutorial/connect-supabase-steps";
-import SignUpUserSteps from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import GuestContinueButton from "@/components/GuestContinueButton";
 
 export default async function Home() {
   return (
@@ -26,10 +24,8 @@ export default async function Home() {
           </Button>
         </div>
 
-        {/* “Continue as Guest” below, in gray text */}
-        <Button asChild variant="ghost" className="mt-2 text-gray-500">
-          <Link href="/meal-plan">Continue as Guest</Link>
-        </Button>
+        {/*Continue as Guest Button*/}
+        <GuestContinueButton />
       </main>
     </>
   );
