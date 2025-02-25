@@ -57,7 +57,7 @@ export default function MealPlanPage() {
 
       {/* Display the Generated Meal Plan */}
       {mealPlan && (
-        <div className="mt-4 p-4 border rounded bg-gray-100">
+        <div className="mt-4 p-4 border rounded">
         <h2 className="font-semibold">Meal Plan:</h2>
         <ReactMarkdown>{mealPlan}</ReactMarkdown>
       </div>

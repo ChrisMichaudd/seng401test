@@ -5,6 +5,7 @@ import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import CreateMealPlanButton from "@/components/AuthenticatedContinueButton";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -35,9 +36,7 @@ export default async function ProtectedPage() {
       </div>
       <div>
         <div className="mt-4">
-          <Button asChild variant="default">
-            <Link href="/meal-plan">Create Meal Plan</Link>
-          </Button>
+        <CreateMealPlanButton user={user} />
         </div>
       </div>
       <div className="flex flex-col gap-2 items-start">
