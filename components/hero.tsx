@@ -9,10 +9,11 @@ export default function Header() {
         <h1 className="text-6xl lg:text-7xl font-bold">PrepSmart</h1>
       </div>
 
-      {/* Slogan */}
-      <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        Personalized Meal Plans, Powered by AI{" "}
-      </p>
+      {/* Slogan - Split into two lines */}
+      <div className="flex flex-col items-center text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
+        <p>Personalized Meal Plans</p>
+        <p>Powered by AI</p>
+      </div>
 
       {/* Divider */}
       <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
