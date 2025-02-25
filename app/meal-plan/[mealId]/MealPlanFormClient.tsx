@@ -151,6 +151,75 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     }
   };
 
+  // Add this validation function near your other helper functions
+  const validateRequiredFields = (): { isValid: boolean; firstMissingField: string | null } => {
+    const requiredFields = [
+      { name: 'name', label: 'Name' },
+      { name: 'age', label: 'Age' },
+      { name: 'gender', label: 'Gender' },
+      { name: 'height', label: 'Height' },
+      { name: 'weight', label: 'Weight' },
+      { name: 'activity_level', label: 'Activity Level' },
+      { name: 'transformation_goal', label: 'Transformation Goal' },
+      { name: 'weekly_budget', label: 'Weekly Budget' },
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field.name as keyof typeof formData]) {
+        return { isValid: false, firstMissingField: field.name };
+      }
+    }
+
+    return { isValid: true, firstMissingField: null };
+  };
+
+  // Modify the handler for the Generate Plan button
+  const handleGeneratePlan = async () => {
+    // First, save current form data
+    const weightInKg = weightUnit === 'lbs' && formData.weight 
+      ? convertLbsToKg(formData.weight)
+      : formData.weight;
+
+    const heightInCm = heightUnit === 'ft' && heightFeet && heightInches
+      ? convertFtInchesToCm(parseFloat(heightFeet), parseFloat(heightInches))
+      : formData.height;
+
+    // Save to database first
+    const { error: saveError } = await supabase
+      .from("meal_plans")
+      .update({
+        ...formData,
+        weight: weightInKg,
+        height: heightInCm,
+      })
+      .eq("meal_id", mealId)
+      .single();
+
+    if (saveError) {
+      console.error("Save error:", saveError);
+      setStatusMessage("Failed to save your data. Please try again.");
+      return;
+    }
+
+    // Now proceed with validation and generation
+    const { isValid, firstMissingField } = validateRequiredFields();
+    
+    if (!isValid && firstMissingField) {
+      const element = document.getElementById(firstMissingField);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+      }
+      
+      setStatusMessage(`Please fill in your ${firstMissingField.replace('_', ' ')} before generating a plan.`);
+      return;
+    }
+
+    // If valid, log the data
+    console.log('Meal Plan Data:', JSON.stringify(formData, null, 2));
+    setStatusMessage("All required fields are filled. Ready to generate plan!");
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto px-2 sm:px-0">
       {/* NAME - New field */}
@@ -496,15 +565,33 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         />
       </div>
 
-      {/* SUBMIT BUTTON */}
-      <Button type="submit" variant="default" 
-        className="mt-8 bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg">
-        Save Changes
-      </Button>
+      {/* BUTTONS */}
+      <div className="flex justify-between items-center mt-8">
+        <Button 
+          type="button" 
+          onClick={handleGeneratePlan}
+          variant="default" 
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg"
+        >
+          Generate Plan
+        </Button>
 
-      {/* STATUS MESSAGE - Improved visibility */}
+        <Button 
+          type="submit" 
+          variant="default" 
+          className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg"
+        >
+          Save Changes
+        </Button>
+      </div>
+
+      {/* Update the status message styling to handle errors */}
       {statusMessage && (
-        <div className="mt-4 text-center p-3 bg-green-50 text-green-700 rounded-lg border border-green-200">
+        <div className={`mt-4 text-center p-3 rounded-lg border ${
+          statusMessage.includes('Please fill in') 
+            ? 'bg-red-50 text-red-700 border-red-200'
+            : 'bg-green-50 text-green-700 border-green-200'
+        }`}>
           {statusMessage}
         </div>
       )}
