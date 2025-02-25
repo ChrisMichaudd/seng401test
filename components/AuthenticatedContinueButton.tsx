@@ -39,7 +39,7 @@ export default function CreateMealPlanButton({ user }: { user: any }) {
 
   return (
     <Button onClick={handleCreateMealPlan} variant="default">
-      Create Meal Plan
+      Create a New Meal Plan
     </Button>
   );
 }
