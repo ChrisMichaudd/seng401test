@@ -152,7 +152,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto px-2 sm:px-0">
       {/* NAME - New field */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="name">
@@ -203,7 +203,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       </div>
 
       {/* WEIGHT with unit selection */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="weight">
             Weight
@@ -299,7 +299,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         <label className="block mb-1 text-sm font-medium text-gray-600">
           Activity Level
         </label>
-        <div className="grid grid-cols-4 gap-4 mt-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-2">
           {[
             { value: 'sedentary', icon: AirlineSeatReclineNormalIcon, label: 'Sedentary' },
             { value: 'light', icon: DirectionsWalkIcon, label: 'Light' },
@@ -341,7 +341,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         <label className="block mb-1 text-sm font-medium text-gray-600">
           Dietary Preferences
         </label>
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-2">
           {[
             { name: 'vegetarian', label: 'Vegetarian' },
             { name: 'vegan', label: 'Vegan' },
@@ -392,7 +392,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         <label className="block mb-1 text-sm font-medium text-gray-600">
           Allergies
         </label>
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-2">
           {[
             { name: 'allergy_nuts', label: 'Nuts' },
             { name: 'allergy_dairy', label: 'Dairy' },
@@ -443,7 +443,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         <label className="block mb-1 text-sm font-medium text-gray-600">
           Transformation Goal
         </label>
-        <div className="grid grid-cols-3 gap-4 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mt-2">
           {[
             { value: 'lose_weight', icon: TrendingDown, label: 'Lose Weight' },
             { value: 'maintain_weight', icon: MinusCircle, label: 'Maintain' },
