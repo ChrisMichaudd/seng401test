@@ -124,42 +124,23 @@ export default function MealPlanDisplay({ mealPlan }: { mealPlan: MealPlanData }
             </button>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Produce Section */}
-            <div>
-              <h3 className="text-lg font-medium mb-3 text-black">Produce</h3>
-              <div className="space-y-2">
-                {mealPlan.groceryList
-                  .find(cat => cat.category.toLowerCase() === 'produce')
-                  ?.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div>
-                        <span className="font-medium text-black">{item.name}</span>
-                        <span className="text-gray-600 text-sm ml-2">({item.quantity})</span>
-                      </div>
-                      <span className="text-green-600 font-medium">${item.estimatedPrice.toFixed(2)}</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            {/* Pantry Section */}
-            <div>
-              <h3 className="text-lg font-medium mb-3 text-black">Pantry</h3>
-              <div className="space-y-2">
-                {mealPlan.groceryList
-                  .find(cat => cat.category.toLowerCase() === 'pantry')
-                  ?.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div>
-                        <span className="font-medium text-black">{item.name}</span>
-                        <span className="text-gray-600 text-sm ml-2">({item.quantity})</span>
-                      </div>
-                      <span className="text-green-600 font-medium">${item.estimatedPrice.toFixed(2)}</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {mealPlan.groceryList.flatMap(category =>
+              category.items.map((item, itemIndex) => (
+                <div key={`${category.category}-${itemIndex}`} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-black text-sm">{item.name}</span>
+                    <span className="text-xs text-gray-500">{category.category}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-600">{item.quantity}</span>
+                    <span className="text-green-600 font-medium min-w-[70px] text-right">
+                      ${item.estimatedPrice.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Grocery Total */}
