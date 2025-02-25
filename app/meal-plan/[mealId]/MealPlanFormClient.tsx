@@ -262,6 +262,57 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     }
   };
 
+  // Update these height handlers
+  const handleHeightFeetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHeightFeet(e.target.value);
+    // Update formData.height when feet changes
+    if (e.target.value && heightInches) {
+      const heightInCm = convertFtInchesToCm(
+        parseFloat(e.target.value),
+        parseFloat(heightInches)
+      );
+      setFormData(prev => ({ ...prev, height: heightInCm }));
+    }
+  };
+
+  const handleHeightInchesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHeightInches(e.target.value);
+    // Update formData.height when inches changes
+    if (heightFeet && e.target.value) {
+      const heightInCm = convertFtInchesToCm(
+        parseFloat(heightFeet),
+        parseFloat(e.target.value)
+      );
+      setFormData(prev => ({ ...prev, height: heightInCm }));
+    }
+  };
+
+  // Update the height unit handler
+  const handleHeightUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newUnit = e.target.value as 'cm' | 'ft';
+    setHeightUnit(newUnit);
+    
+    if (newUnit === 'cm') {
+      // Convert ft/in to cm if values exist
+      if (heightFeet && heightInches) {
+        const heightInCm = convertFtInchesToCm(
+          parseFloat(heightFeet),
+          parseFloat(heightInches)
+        );
+        setFormData(prev => ({ ...prev, height: heightInCm }));
+      }
+    } else {
+      // Convert cm to ft/in if height exists
+      if (formData.height) {
+        const totalInches = formData.height / 2.54;
+        const feet = Math.floor(totalInches / 12);
+        const inches = Math.round(totalInches % 12);
+        setHeightFeet(feet.toString());
+        setHeightInches(inches.toString());
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto px-2 sm:px-0">
       {/* NAME - New field */}
@@ -361,7 +412,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
               />
               <select
                 value={heightUnit}
-                onChange={(e) => setHeightUnit(e.target.value as 'cm' | 'ft')}
+                onChange={handleHeightUnitChange}
                 className="border border-gray-200 rounded-lg p-2 w-24 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
               >
                 <option value="cm">cm</option>
@@ -376,7 +427,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
                   <input
                     type="number"
                     value={heightFeet}
-                    onChange={(e) => setHeightFeet(e.target.value)}
+                    onChange={handleHeightFeetChange}
                     className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
                     placeholder="ft"
                   />
@@ -386,7 +437,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
                   <input
                     type="number"
                     value={heightInches}
-                    onChange={(e) => setHeightInches(e.target.value)}
+                    onChange={handleHeightInchesChange}
                     className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
                     placeholder="in"
                   />
@@ -394,7 +445,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
               </div>
               <select
                 value={heightUnit}
-                onChange={(e) => setHeightUnit(e.target.value as 'cm' | 'ft')}
+                onChange={handleHeightUnitChange}
                 className="border border-gray-200 rounded-lg p-2 w-24 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
               >
                 <option value="cm">cm</option>
