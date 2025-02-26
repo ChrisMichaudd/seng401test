@@ -5,13 +5,14 @@ export const dynamic = "force-dynamic";
 
 
 interface MealPlanPageProps {
-  params: { mealId: string };
+  params: Promise<{ mealId: string }>;
 }
 
-export default async function MealPlanPage({ params }: MealPlanPageProps) {
+export default async function MealPlanPage(props: MealPlanPageProps) {
+  const params = await props.params;
   const { mealId } = params;  // Simple destructuring is correct - no await needed
   const supabase = await createClient();
-  
+
   // Fetch the row for this mealId
   const { data, error } = await supabase
     .from("meal_plans")

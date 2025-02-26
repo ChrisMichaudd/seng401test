@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import MealPlanDisplay from './MealPlanDisplay';
 import type { MealPlanData } from './types';
 
-export default async function MealPlanView({ params }: { params: { mealId: string } }) {
+export default async function MealPlanView(props: { params: Promise<{ mealId: string }> }) {
+  const params = await props.params;
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("meal_plans")
     .select("*")
