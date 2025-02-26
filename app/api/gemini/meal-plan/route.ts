@@ -166,49 +166,36 @@ export async function POST(req: Request) {
       - Include nutrition info
       - List all groceries needed`;
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }]}],
-      generationConfig: {
-        temperature: 0.9,
-        topK: 32,
-        topP: 1,
-        maxOutputTokens: 8192,
-      },
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-      ],
-    });
-
-    let response = await result.response.text();
+    const response = await model.generateContent(prompt);
+    const responseText = response.response.text();
     
     try {
-      // Remove any markdown code block markers and trim whitespace
-      const cleanedResponse = response.replace(/```json\n?|\n?```/g, '').trim();
+      // First try to parse the raw response
+      let jsonString = responseText;
       
-      // Handle potential incomplete JSON
-      if (!cleanedResponse.endsWith('}')) {
-        console.error('Incomplete JSON response:', cleanedResponse);
-        return Response.json({ error: 'Incomplete response from AI' }, { status: 500 });
+      // If that fails, try to extract from markdown
+      if (responseText.includes('```')) {
+        const jsonMatch = responseText.match(/```(?:json)?\n?([\s\S]*?)\n?```/);
+        jsonString = jsonMatch ? jsonMatch[1].trim() : responseText;
       }
 
-      const parsedResponse = JSON.parse(cleanedResponse);
-
-      // Validate the response has the required structure
-      if (!parsedResponse.weeklyMealPlan || !parsedResponse.totalWeeklyCost || !parsedResponse.nutritionSummary) {
-        console.error('Invalid response structure:', parsedResponse);
-        return Response.json({ error: 'Invalid response structure from AI' }, { status: 500 });
-      }
-
-      return Response.json({ mealPlan: parsedResponse });
-    } catch (error) {
-      console.error('Failed to parse Gemini response:', response);
-      return Response.json({ error: 'Invalid response format from AI' }, { status: 500 });
+      const parsedResponse = JSON.parse(jsonString);
+      return new Response(JSON.stringify({ mealPlan: parsedResponse }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200
+      });
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      return new Response(JSON.stringify({ error: 'Failed to parse meal plan response' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 500
+      });
     }
   } catch (error) {
-    console.error('Error generating meal plan:', error);
-    return Response.json({ error: 'Failed to generate meal plan' }, { status: 500 });
+    console.error('Gemini API Error:', error);
+    return new Response(JSON.stringify({ error: 'Failed to generate meal plan' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 500
+    });
   }
 } 
