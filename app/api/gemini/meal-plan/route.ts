@@ -158,7 +158,7 @@ export async function POST(req: Request) {
         "estimatedCost": number
       }
 
-      Requirements:
+      Requirements (STRICT MUST ADHERE TO ALL):
       - 7 meals per category
       - Stay within budget: $${userData.weekly_budget}
       - Match dietary restrictions
