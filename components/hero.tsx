@@ -9,10 +9,10 @@ export default function Header() {
         <h1 className="text-6xl lg:text-7xl font-bold">PrepSmart</h1>
       </div>
 
-      {/* Slogan - Split into two lines */}
-      <div className="flex flex-col items-center text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        <p>Personalized Meal Plans</p>
-        <p>Powered by AI</p>
+      {/* Slogan - Different font sizes for hierarchy */}
+      <div className="flex flex-col items-center text-center mx-auto max-w-xl">
+        <p className="text-3xl lg:text-4xl font-semibold">Personalized Meal Planner</p>
+        <p className="text-lg lg:text-xl italic text-muted-foreground">Tailored just for you, by AI</p>
       </div>
 
       {/* Divider */}
@@ -20,3 +20,5 @@ export default function Header() {
     </div>
   );
 }
+
+

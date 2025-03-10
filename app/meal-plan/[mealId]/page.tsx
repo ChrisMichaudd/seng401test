@@ -32,7 +32,7 @@ export default async function MealPlanPage(props: MealPlanPageProps) {
         <h1 className="text-3xl font-bold mb-2">
           {data.user_email ? `Welcome back, ${data.user_email}!` : "Welcome to Your Meal Planning Session!"}
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-300 mb-8">
           Let's create a personalized meal plan that fits your needs and preferences.
         </p>
       </div>
