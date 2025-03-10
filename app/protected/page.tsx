@@ -48,7 +48,7 @@ export default async function ProtectedPage() {
     <div className="flex-1 w-full flex flex-col gap-8 items-center p-4">
       {/* Welcome Message */}
       <div className="w-full max-w-4xl">
-        <h1 className="text-3xl font-bold mb-4 break-words">{`Welcome, ${userName}`}</h1>
+        <h1 className="text-3xl font-bold mb-4 break-words">{`Welcome, ${userName}!`}</h1>
       </div>
 
       {/* Create New Meal Plan Button */}
