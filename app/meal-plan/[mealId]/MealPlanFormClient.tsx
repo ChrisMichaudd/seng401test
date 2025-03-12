@@ -659,24 +659,43 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       </div>
 
       {/* BUTTONS */}
-      <div className="flex justify-between items-center mt-8">
-        <Button 
-          type="button" 
-          onClick={handleGeneratePlan}
-          variant="default" 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg"
-        >
-          Generate Plan
-        </Button>
+      <div className="flex justify-between items-center mt-8 space-x-4">
 
-        <Button 
-          type="submit" 
-          variant="default" 
-          className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg"
-        >
+      {/* Save Changes Button with Downward Arrow */}
+      <Button
+        type="submit"
+        variant="default"
+        className="w-auto bg-green-600 hover:bg-green-500 focus:ring-2 focus:ring-green-600 text-white px-8 py-3 rounded-lg transition-all duration-300 ease-in-out flex justify-center items-center group overflow-hidden"
+      >
+      
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2zM7 9l5 5 5-5" />
+        </svg>
+      
+        <span className="transition-all transform opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-10 duration-300 ease-in-out">
           Save Changes
-        </Button>
-      </div>
+        </span>
+      </Button>
+
+
+  
+      <Button
+        type="button"
+        onClick={handleGeneratePlan}
+        variant="default"
+        className="w-auto bg-green-600 hover:bg-green-500 focus:ring-2 focus:ring-green-400 text-white px-8 py-3 rounded-lg transition-all duration-300 ease-in-out flex justify-center items-center group overflow-hidden"
+      >
+    
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7-7l7 7-7 7" />
+      </svg>
+
+  
+        <span className="transition-all transform opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-10 duration-300 ease-in-out">
+          Generate Plan
+        </span>
+      </Button>
+    </div>
 
       {/* Update the status message styling to handle errors */}
       {statusMessage && (
