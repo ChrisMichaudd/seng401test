@@ -135,7 +135,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     }
   };
 
-  // Update handleChange to include validation
+  // Update handleChange to include validation.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const target = e.target;
     const name = target.name;
