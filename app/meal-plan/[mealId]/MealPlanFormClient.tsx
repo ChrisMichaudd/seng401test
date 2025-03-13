@@ -45,6 +45,18 @@ interface MealPlanFormClientProps {
   initialData: MealPlanData;
 }
 
+// Add this interface for form validation
+interface FormErrors {
+  name?: string;
+  age?: string;
+  gender?: string;
+  weight?: string;
+  height?: string;
+  weekly_budget?: string;
+  custom_dietary_preferences?: string;
+  custom_allergies?: string;
+}
+
 export default function MealPlanFormClient({ mealId, initialData }: MealPlanFormClientProps) {
   const supabase = createClient();
   const router = useRouter();
@@ -85,39 +97,104 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     return totalInches * 2.54;
   };
 
-  // A helper to handle changes for text/number/select/checkbox inputs
+  // Add form validation state
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+
+  // Add validation function
+  const validateField = (name: string, value: any): string | undefined => {
+    switch (name) {
+      case 'age':
+        if (value <= 0) return 'Age must be positive';
+        if (value > 120) return 'Please enter a valid age';
+        return undefined;
+      
+      case 'gender':
+        if (!isNaN(Number(value))) return 'Gender cannot be a number';
+        if (value.trim().length === 0) return 'Gender is required';
+        return undefined;
+      
+      case 'weight':
+        const weightValue = weightUnit === 'kg' ? value : convertLbsToKg(value);
+        if (weightValue <= 0) return 'Weight must be positive';
+        if (weightValue > 300) return 'Please enter a valid weight';
+        return undefined;
+      
+      case 'height':
+        const heightValue = heightUnit === 'cm' ? value : convertFtInchesToCm(parseFloat(heightFeet), parseFloat(heightInches));
+        if (heightValue <= 0) return 'Height must be positive';
+        if (heightValue > 300) return 'Please enter a valid height';
+        return undefined;
+      
+      case 'weekly_budget':
+        if (value < 20) return 'Minimum budget is $20';
+        if (value > 10000) return 'Maximum budget is $10,000';
+        return undefined;
+      
+      default:
+        return undefined;
+    }
+  };
+
+  // Update handleChange to include validation
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const target = e.target;
-    const value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
     const name = target.name;
+    let value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
 
-    // If it's a checkbox, we store the checked boolean
-    if (target.type === "checkbox") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    } 
-    // If it's a number input, parse it into a float (or int)
-    else if (target.type === "number") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: target.value === "" ? null : parseFloat(target.value), 
-      }));
-    } 
-    // Otherwise treat as text / select / textarea
-    else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+    // Update formData
+    setFormData(prev => ({
+      ...prev,
+      [name]: target.type === "number" ? (value === "" ? null : parseFloat(value as string)) : value,
+    }));
+
+    // Validate the field
+    const error = validateField(name, value);
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: error,
+    }));
+  };
+
+  // Update form validation
+  const isFormValid = (): boolean => {
+    const newErrors: FormErrors = {};
+    let isValid = true;
+
+    // Validate required fields
+    const requiredFields = [
+      { name: 'name', label: 'Name' },
+      { name: 'age', label: 'Age' },
+      { name: 'gender', label: 'Gender' },
+      { name: 'height', label: 'Height' },
+      { name: 'weight', label: 'Weight' },
+      { name: 'activity_level', label: 'Activity Level' },
+      { name: 'transformation_goal', label: 'Transformation Goal' },
+      { name: 'weekly_budget', label: 'Weekly Budget' },
+    ];
+
+    for (const field of requiredFields) {
+      const value = formData[field.name as keyof typeof formData];
+      const error = validateField(field.name, value);
+      
+      if (!value || error) {
+        newErrors[field.name as keyof FormErrors] = error || `${field.label} is required`;
+        isValid = false;
+      }
     }
+
+    setFormErrors(newErrors);
+    return isValid;
   };
 
   // Submit handler: updates the row in Supabase
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage("");
+
+    if (!isFormValid()) {
+      setStatusMessage("Please fix the errors before saving");
+      return;
+    }
 
     // Convert weight if needed
     let weightInKg = formData.weight;
@@ -179,6 +256,11 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGeneratePlan = async () => {
+    if (!isFormValid()) {
+      setStatusMessage("Please fix the errors before generating a meal plan");
+      return;
+    }
+
     // First, save current form data
     const weightInKg = weightUnit === 'lbs' && formData.weight 
       ? convertLbsToKg(formData.weight)
@@ -315,7 +397,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto px-2 sm:px-0">
-      {/* NAME - New field */}
+      {/* NAME */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="name">
           Name
@@ -326,12 +408,15 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           type="text"
           value={formData.name ?? ""}
           onChange={handleChange}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.name ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="Enter your name"
         />
+        {formErrors.name && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+        )}
       </div>
 
-      {/* AGE - Disable scroll */}
+      {/* AGE */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="age">
           Age
@@ -343,12 +428,15 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           value={formData.age ?? ""}
           onChange={handleChange}
           onWheel={(e) => (e.target as HTMLInputElement).blur()}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.age ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="e.g. 30"
         />
+        {formErrors.age && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.age}</p>
+        )}
       </div>
 
-      {/* GENDER - Changed to text input */}
+      {/* GENDER */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="gender">
           Gender
@@ -359,12 +447,15 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           type="text"
           value={formData.gender ?? ""}
           onChange={handleChange}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.gender ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="Enter your gender"
         />
+        {formErrors.gender && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.gender}</p>
+        )}
       </div>
 
-      {/* WEIGHT with unit selection */}
+      {/* WEIGHT */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="weight">
@@ -378,7 +469,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
               step="0.1"
               value={formData.weight ?? ""}
               onChange={handleChange}
-              className="border border-gray-200 rounded-lg p-2 flex-1 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+              className={`border ${formErrors.weight ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 flex-1 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
               placeholder="Enter weight"
             />
             <select
@@ -390,10 +481,13 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
               <option value="lbs">lbs</option>
             </select>
           </div>
+          {formErrors.weight && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.weight}</p>
+          )}
         </div>
       </div>
 
-      {/* HEIGHT with unit selection */}
+      {/* HEIGHT */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600">
           Height
@@ -407,7 +501,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
                 step="0.1"
                 value={formData.height ?? ""}
                 onChange={handleChange}
-                className="border border-gray-200 rounded-lg p-2 flex-1 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+                className={`border ${formErrors.height ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 flex-1 bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
                 placeholder="Enter height"
               />
               <select
@@ -428,7 +522,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
                     type="number"
                     value={heightFeet}
                     onChange={handleHeightFeetChange}
-                    className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+                    className={`border ${formErrors.height ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
                     placeholder="ft"
                   />
                 </div>
@@ -438,7 +532,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
                     type="number"
                     value={heightInches}
                     onChange={handleHeightInchesChange}
-                    className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+                    className={`border ${formErrors.height ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
                     placeholder="in"
                   />
                 </div>
@@ -454,6 +548,9 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
             </>
           )}
         </div>
+        {formErrors.height && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.height}</p>
+        )}
       </div>
 
       {/* ACTIVITY LEVEL */}
@@ -544,7 +641,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           name="custom_dietary_preferences"
           value={formData.custom_dietary_preferences ?? ""}
           onChange={handleChange}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.custom_dietary_preferences ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="Describe any other dietary preferences..."
         />
       </div>
@@ -595,7 +692,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           name="custom_allergies"
           value={formData.custom_allergies ?? ""}
           onChange={handleChange}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.custom_allergies ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="Describe any other allergies..."
         />
       </div>
@@ -653,9 +750,12 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
           step="0.01"
           value={formData.weekly_budget ?? ""}
           onChange={handleChange}
-          className="border border-gray-200 rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black"
+          className={`border ${formErrors.weekly_budget ? 'border-red-500' : 'border-gray-200'} rounded-lg p-2 w-full bg-gray-100/50 focus:bg-gray-100 focus:border-green-500 outline-none transition-colors placeholder-gray-500 text-black`}
           placeholder="e.g. 100.00"
         />
+        {formErrors.weekly_budget && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.weekly_budget}</p>
+        )}
       </div>
 
       {/* BUTTONS */}
