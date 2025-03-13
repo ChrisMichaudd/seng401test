@@ -25,15 +25,11 @@ export default function MealPlanDisplay({ mealPlan }: { mealPlan: MealPlanData }
   const handleExportGroceryList = () => {
     const groceryText = mealPlan.groceryList.map(category => {
       return `\n${category.category.toUpperCase()}\n${category.items
-        .map(item => `${item.name} (${item.quantity}) - $${item.estimatedPrice.toFixed(2)}`)
+        .map(item => `${item.name} (${item.quantity})`)
         .join('\n')}`;
     }).join('\n');
 
-    const total = mealPlan.groceryList.reduce((sum, category) => 
-      sum + category.items.reduce((catSum, item) => catSum + item.estimatedPrice, 0), 0
-    );
-
-    const fullText = `GROCERY LIST\n${groceryText}\n\nTotal: $${total.toFixed(2)}`;
+    const fullText = `GROCERY LIST\n${groceryText}`;
 
     const blob = new Blob([fullText], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
@@ -134,21 +130,10 @@ export default function MealPlanDisplay({ mealPlan }: { mealPlan: MealPlanData }
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-600">{item.quantity}</span>
-                    <span className="text-green-600 font-medium min-w-[70px] text-right">
-                      ${item.estimatedPrice.toFixed(2)}
-                    </span>
                   </div>
                 </div>
               ))
             )}
-          </div>
-
-          {/* Grocery Total */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-end items-center">
-              <span className="text-lg font-medium text-black mr-2">Total:</span>
-              <span className="text-xl font-bold text-green-600">${groceryTotal.toFixed(2)}</span>
-            </div>
           </div>
         </div>
       )}
