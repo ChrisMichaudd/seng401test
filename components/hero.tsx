@@ -1,18 +1,16 @@
-'use client';  
+'use client';
 
 import { motion } from "framer-motion";
 import dynamic from 'next/dynamic';
-
+import robotAnimation from "@/app/robot.json";
 
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
-import robotAnimation from "@/app/robot.json";  
 
 export default function Header() {
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between px-8 py-6 mt-[-150px]">
-      
+    <div className="flex flex-col lg:flex-row items-center justify-between px-8 py-6">
       {/* Left Section - Animated Text */}
-      <div className="max-w-lg text-left lg:ml-0"> 
+      <div className="max-w-lg text-left lg:ml-0 z-10"> 
         <motion.h1
           className="text-6xl lg:text-7xl font-bold"
           initial={{ opacity: 0, x: -50 }}
@@ -42,7 +40,7 @@ export default function Header() {
       </div>
 
       {/* Right Section - Lottie Animation */}
-      <div className="w-full lg:w-[800px] h-[800px] flex justify-center">
+      <div className="w-full lg:w-[600px] h-[600px] flex justify-center">
         <Lottie animationData={robotAnimation} loop={true} />
       </div>
     </div>
