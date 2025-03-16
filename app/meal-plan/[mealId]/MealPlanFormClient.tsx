@@ -88,14 +88,39 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   // A helper to handle changes for text/number/select/checkbox inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const target = e.target;
-    const value = target.type === 'checkbox' ? (target as HTMLInputElement).checked : target.value;
+    let value = target.type === 'checkbox' ? (target as HTMLInputElement).checked.toString() : target.value;
     const name = target.name;
-
-    // If it's a checkbox, we store the checked boolean
-    if (target.type === "checkbox") {
+  
+    // Allow empty values (lets users backspace everything)
+    if (value === "") {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
+      }));
+      return;
+    }
+  
+    // GENDER VALIDATION (Allow only letters and spaces)
+    if (name === "gender") {
+      if (!/^[a-zA-Z\s]*$/.test(value)) {
+        setStatusMessage("Invalid input for gender. Please enter only letters.");
+        return;
+      }
+    }
+  
+    // WEIGHT, HEIGHT, AND AGE VALIDATION (Allow only valid numbers)
+    if (["weight", "height", "age"].includes(name)) {
+      if (!/^\d*\.?\d*$/.test(value)) {
+        setStatusMessage(`Invalid ${name}. Please enter a valid number.`);
+        return;
+      }
+    }
+  
+    // If it's a checkbox, update state as boolean
+    if (target.type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: (target as HTMLInputElement).checked, 
       }));
     } 
     // If it's a number input, parse it into a float (or int)
@@ -105,7 +130,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         [name]: target.value === "" ? null : parseFloat(target.value), 
       }));
     } 
-    // Otherwise treat as text / select / textarea
+    // Otherwise, update as normal text/select/textarea
     else {
       setFormData((prev) => ({
         ...prev,
@@ -113,38 +138,34 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       }));
     }
   };
-
+  
   // Submit handler: updates the row in Supabase
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage("");
-
-    // Convert weight if needed
+  
+    if (!validateFormData()) return;
+  
     let weightInKg = formData.weight;
-    if (weightUnit === 'lbs' && weightInKg) {
+    if (weightUnit === "lbs" && weightInKg) {
       weightInKg = convertLbsToKg(weightInKg);
     }
-
-    // Convert height if needed
+  
     let heightInCm = formData.height;
-    if (heightUnit === 'ft' && heightFeet && heightInches) {
-      heightInCm = convertFtInchesToCm(
-        parseFloat(heightFeet),
-        parseFloat(heightInches)
-      );
+    if (heightUnit === "ft" && heightFeet && heightInches) {
+      heightInCm = convertFtInchesToCm(parseFloat(heightFeet), parseFloat(heightInches));
     }
-
+  
     const { data, error } = await supabase
       .from("meal_plans")
       .update({
         ...formData,
         weight: weightInKg,
         height: heightInCm,
-        // ... rest of your update fields
       })
       .eq("meal_id", mealId)
       .single();
-
+  
     if (error) {
       console.error("Update error:", error);
       setStatusMessage("There was an error updating your meal plan. Please try again.");
@@ -152,6 +173,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       setStatusMessage("Meal plan updated successfully!");
     }
   };
+  
 
   // Add this validation function near your other helper functions
   const validateRequiredFields = (): { isValid: boolean; firstMissingField: string | null } => {
@@ -179,6 +201,11 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGeneratePlan = async () => {
+    if (!validateFormData()){
+      setStatusMessage("Please fix the errors before generating a meal plan");
+      return;
+    } 
+
     // First, save current form data
     const weightInKg = weightUnit === 'lbs' && formData.weight 
       ? convertLbsToKg(formData.weight)
@@ -262,6 +289,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     }
   };
 
+
   // Update these height handlers
   const handleHeightFeetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHeightFeet(e.target.value);
@@ -287,6 +315,52 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     }
   };
 
+  // Validates the values of age, weight, and height ensuring they are in a reasonable range
+  const validateFormData = (): boolean => {
+    let invalidFields: string[] = [];
+  
+    if (formData.age !== null && (formData.age < 10 || formData.age > 120)) {
+      invalidFields.push("age");
+    }
+  
+    if (formData.weight !== null && (formData.weight < 20 || formData.weight > 900)) {
+      invalidFields.push("weight");
+    }
+  
+    if (heightUnit === "cm") {
+      if (formData.height !== null && (formData.height < 50 || formData.height > 250)) {
+        invalidFields.push("height (cm)");
+      }
+    } else if (heightUnit === "ft") {
+      const feet = parseFloat(heightFeet);
+      const inches = parseFloat(heightInches);
+  
+      if (isNaN(feet) || feet < 2 || feet > 8) {
+        invalidFields.push("height (feet)");
+      }
+  
+      if (isNaN(inches) || inches < 0 || inches >= 12) {
+        invalidFields.push("height (inches)");
+      }
+    }
+  
+    if (invalidFields.length > 0) {
+      let formattedFields = invalidFields.join(", ");
+  
+      if (invalidFields.length > 1) {
+        const lastField = invalidFields.pop();
+        formattedFields = `${invalidFields.join(", ")} and ${lastField}`;
+      }
+  
+      setStatusMessage(`Invalid ${formattedFields}. Please enter realistic values.`);
+      return false;
+    }
+  
+    return true;
+  };
+  
+
+  
   // Update the height unit handler
   const handleHeightUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newUnit = e.target.value as 'cm' | 'ft';
