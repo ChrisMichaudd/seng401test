@@ -5,6 +5,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Analytics } from '@vercel/analytics/react';
 import Link from "next/link";
 import "./globals.css";
 import prepSmartLogo from "@/components/prepsmartlogos/PrepSmartLogoAllWhite.png";
@@ -73,6 +74,7 @@ export default function RootLayout({
               <ThemeSwitcher />
             </footer>
           </main>
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
