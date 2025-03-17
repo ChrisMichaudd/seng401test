@@ -103,33 +103,41 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   // Add validation function
   const validateField = (name: string, value: any): string | undefined => {
     switch (name) {
-      case 'age':
-        if (value <= 0) return 'Age must be positive';
-        if (value > 120) return 'Please enter a valid age';
+      case "age":
+        if (!/^\d+$/.test(value)) return "Age must be a whole number.";
+        if (value < 10 || value > 120) return "Please enter a valid age.";
         return undefined;
-      
-      case 'gender':
-        if (!isNaN(Number(value))) return 'Gender cannot be a number';
-        if (value.trim().length === 0) return 'Gender is required';
+  
+      case "gender":
+        if (!/^[a-zA-Z\s]+$/.test(value)) return "Gender must contain only letters.";
+        if (value.trim().length === 0) return "Please enter a gender.";
         return undefined;
-      
-      case 'weight':
-        const weightValue = weightUnit === 'kg' ? value : convertLbsToKg(value);
-        if (weightValue <= 0) return 'Weight must be positive';
-        if (weightValue > 300) return 'Please enter a valid weight';
+  
+      case "weight":
+        if (!/^\d*\.?\d+$/.test(value)) return "Weight must be a valid number.";
+        const weightValue = weightUnit === "kg" ? value : convertLbsToKg(value);
+        if (weightValue < 20 || weightValue > 900) return "Please enter a valid weight.";
         return undefined;
-      
-      case 'height':
-        const heightValue = heightUnit === 'cm' ? value : convertFtInchesToCm(parseFloat(heightFeet), parseFloat(heightInches));
-        if (heightValue <= 0) return 'Height must be positive';
-        if (heightValue > 300) return 'Please enter a valid height';
+  
+      case "height":
+        if (heightUnit === "cm") {
+          if (!/^\d*\.?\d+$/.test(value)) return "Height must be a valid number.";
+          if (value < 50 || value > 250) return "Please enter a valid height.";
+        } else {
+          const feet = parseInt(heightFeet, 10);
+          const inches = parseInt(heightInches, 10);
+          if (isNaN(feet) || isNaN(inches)) return "Please enter a valid height.";
+          if (feet < 1 || feet > 8 || inches < 0 || inches > 11) 
+            return "Feet must be between 1-8, inches between 0-11.";
+        }
         return undefined;
-      
-      case 'weekly_budget':
-        if (value < 20) return 'Minimum budget is $20';
-        if (value > 10000) return 'Maximum budget is $10,000';
+  
+      case "weekly_budget":
+        if (!/^\d*\.?\d+$/.test(value)) return "Budget must be a valid number.";
+        if (value < 20) return "Minimum budget is $20.";
+        if (value > 10000) return "Maximum budget is $10,000.";
         return undefined;
-      
+  
       default:
         return undefined;
     }
@@ -171,6 +179,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       { name: 'transformation_goal', label: 'Transformation Goal' },
       { name: 'weekly_budget', label: 'Weekly Budget' },
     ];
+
 
     for (const field of requiredFields) {
       const value = formData[field.name as keyof typeof formData];
