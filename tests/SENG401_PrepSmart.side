@@ -2362,7 +2362,7 @@
       ],
       "value": ""
     }, {
-      "id": "1310f0dc-b6f4-4518-8157-2528a8052193",
+      "id": "4d8a4722-4884-4651-a86f-7a9c56814733",
       "comment": "",
       "command": "verifyElementPresent",
       "target": "xpath=//p[contains(.,'Budget must be a valid number.')]",
@@ -2386,9 +2386,33 @@
       ],
       "value": "59"
     }, {
-      "id": "1cf9ef35-31b5-406e-a263-8ea0da03a61a",
+      "id": "8776b405-8b55-4d45-8412-60cdeea0b6df",
       "comment": "",
       "command": "verifyElementNotPresent",
+      "target": "xpath=//p[contains(.,'Budget must be a valid number.')]",
+      "targets": [
+        ["css=.text-red-500", "css:finder"],
+        ["xpath=//div[12]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Budget must be a valid number.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b5267618-2a08-48d4-b01d-d90f8473a7be",
+      "comment": "",
+      "command": "type",
+      "target": "id=weekly_budget",
+      "targets": [
+        ["id=weekly_budget", "id"],
+        ["name=weekly_budget", "name"],
+        ["css=#weekly_budget", "css:finder"],
+        ["xpath=//input[@id='weekly_budget']", "xpath:attributes"],
+        ["xpath=//div[12]/input", "xpath:position"]
+      ],
+      "value": "Not a Number"
+    }, {
+      "id": "1310f0dc-b6f4-4518-8157-2528a8052193",
+      "comment": "",
+      "command": "verifyElementPresent",
       "target": "xpath=//p[contains(.,'Budget must be a valid number.')]",
       "targets": [
         ["css=.text-red-500", "css:finder"],
@@ -2476,7 +2500,7 @@
       ],
       "value": "-120"
     }, {
-      "id": "e0a53188-dc11-4591-b7eb-5502246e7aea",
+      "id": "b059ddb8-2893-4a00-bcad-f25e7c8c6d8c",
       "comment": "",
       "command": "verifyElementPresent",
       "target": "xpath=//p[contains(.,'Weight must be a valid number.')]",
@@ -2487,7 +2511,7 @@
       ],
       "value": ""
     }, {
-      "id": "0f944c73-58bc-41d0-b13c-c4cd8d2b70cc",
+      "id": "6804c238-3376-4013-8119-0e170997cc1a",
       "comment": "",
       "command": "verifyElementPresent",
       "target": "xpath=//p[contains(.,'Height must be a valid number.')]",
@@ -2559,14 +2583,61 @@
       ],
       "value": ""
     }, {
-      "id": "e0a0b77a-7215-4a56-a6cd-72a468c384ee",
+      "id": "c32b77d9-3301-4913-90c1-d6c5712875d9",
       "comment": "",
       "command": "verifyElementNotPresent",
+      "target": "xpath=//p[contains(.,'Weight must be a valid number.')]",
+      "targets": [
+        ["css=.flex-1 > .text-red-500", "css:finder"],
+        ["xpath=//div[4]/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Weight must be a valid number.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fdff2cd1-9d1c-455a-8a89-98f1fa8c706b",
+      "comment": "",
+      "command": "type",
+      "target": "id=weight",
+      "targets": [
+        ["id=weight", "id"],
+        ["name=weight", "name"],
+        ["css=#weight", "css:finder"],
+        ["xpath=//input[@id='weight']", "xpath:attributes"],
+        ["xpath=//div/div/input", "xpath:position"]
+      ],
+      "value": "Not a Number"
+    }, {
+      "id": "699564ca-cdff-45b6-9626-1009e66c247b",
+      "comment": "",
+      "command": "type",
+      "target": "name=height",
+      "targets": [
+        ["name=height", "name"],
+        ["css=.items-end > .border-red-500", "css:finder"],
+        ["xpath=//input[@name='height']", "xpath:attributes"],
+        ["xpath=//div[5]/div/input", "xpath:position"]
+      ],
+      "value": "Not a Number"
+    }, {
+      "id": "a87358cc-8d6e-4c4f-b093-480664e5a2fe",
+      "comment": "",
+      "command": "verifyElementPresent",
       "target": "xpath=//p[contains(.,'Height must be a valid number.')]",
       "targets": [
         ["css=div:nth-child(5) > .text-red-500", "css:finder"],
         ["xpath=//div[5]/p", "xpath:position"],
         ["xpath=//p[contains(.,'Height must be a valid number.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e0a53188-dc11-4591-b7eb-5502246e7aea",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Weight must be a valid number.')]",
+      "targets": [
+        ["css=.flex-1 > .text-red-500", "css:finder"],
+        ["xpath=//div[4]/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Weight must be a valid number.')]", "xpath:innerText"]
       ],
       "value": ""
     }]
@@ -3165,6 +3236,323 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "59ab7a60-7b22-4f9a-bdd8-614303db4ff2",
+    "name": "InvalidWeightHeightAge_TooHigh",
+    "commands": [{
+      "id": "c5665479-3e72-4577-8b92-b40f4b36d30e",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3d8da47a-e6e4-4281-a100-2f49e66b42b6",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1177x1237",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b5ea8dec-d29a-4383-b420-982af7d8076e",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "linkText=Sign up",
+      "targets": [
+        ["linkText=Sign up", "linkText"],
+        ["css=.flex:nth-child(2) > .bg-primary", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign up')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/sign-up')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f58d0a99-04cb-487b-8178-5393f6ca205b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.text-gray-500",
+      "targets": [
+        ["css=.text-gray-500", "css:finder"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue as Guest')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "ae002db3-60d3-4011-91e5-60c99a8ed8e2",
+      "comment": "",
+      "command": "click",
+      "target": "id=age",
+      "targets": [
+        ["id=age", "id"],
+        ["name=age", "name"],
+        ["css=#age", "css:finder"],
+        ["xpath=//input[@id='age']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "0d5cdc5a-2ff9-4d75-914a-5c3411f3fe4f",
+      "comment": "",
+      "command": "type",
+      "target": "id=age",
+      "targets": [
+        ["id=age", "id"],
+        ["name=age", "name"],
+        ["css=#age", "css:finder"],
+        ["xpath=//input[@id='age']", "xpath:attributes"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "121"
+    }, {
+      "id": "c5f6f6b2-060b-4260-a21b-a27e01b283a0",
+      "comment": "",
+      "command": "type",
+      "target": "id=weight",
+      "targets": [
+        ["id=weight", "id"],
+        ["name=weight", "name"],
+        ["css=#weight", "css:finder"],
+        ["xpath=//input[@id='weight']", "xpath:attributes"],
+        ["xpath=//div/div/input", "xpath:position"]
+      ],
+      "value": "901"
+    }, {
+      "id": "2e0c2e90-eddf-499e-a457-5e684dda2b8c",
+      "comment": "",
+      "command": "type",
+      "target": "name=height",
+      "targets": [
+        ["name=height", "name"],
+        ["css=.items-end > .border-red-500", "css:finder"],
+        ["xpath=//input[@name='height']", "xpath:attributes"],
+        ["xpath=//div[5]/div/input", "xpath:position"]
+      ],
+      "value": "251"
+    }, {
+      "id": "36efa789-2873-4b30-abcf-72dabb2d7a85",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Please enter a valid age.')]",
+      "targets": [
+        ["css=div:nth-child(2) > .text-red-500", "css:finder"],
+        ["xpath=//form/div[2]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Please enter a valid age.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4c64f0fe-8d4a-4077-909e-f105c9d94d95",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Please enter a valid weight.')]",
+      "targets": [
+        ["css=.flex-1 > .text-red-500", "css:finder"],
+        ["xpath=//div[4]/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Please enter a valid weight.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "88fbc9bc-4574-4dde-aa33-807f41bd86fd",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Please enter a valid height.')]",
+      "targets": [
+        ["css=div:nth-child(5) > .text-red-500", "css:finder"],
+        ["xpath=//div[5]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Please enter a valid height.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "76507ab2-88d1-43fe-ad51-8cf68e9e1d76",
+    "name": "InvalidName",
+    "commands": [{
+      "id": "1ea55795-09f3-47c3-a3ca-8cbba2f8f7af",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "788c9419-462b-4695-9d5d-1ac71981f5d8",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1177x1238",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1e120143-ef4d-4840-816d-72b40885f114",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'Continue as Guest')]",
+      "targets": [
+        ["css=.text-gray-500", "css:finder"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Continue as Guest')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d7bfa864-d6ce-41b0-b616-2c946d1ed417",
+      "comment": "",
+      "command": "type",
+      "target": "id=name",
+      "targets": [
+        ["id=name", "id"],
+        ["name=name", "name"],
+        ["css=#name", "css:finder"],
+        ["xpath=//input[@id='name']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "@Hutton$%"
+    }, {
+      "id": "6c743ac3-1036-45fd-b80f-b898170e478b",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Name must contain only letters and spaces.')]",
+      "targets": [
+        ["css=.mt-1", "css:finder"],
+        ["xpath=//form/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Name must contain only letters and spaces.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "862e891a-8906-4b8b-8a3d-0271048c77e6",
+      "comment": "",
+      "command": "type",
+      "target": "id=name",
+      "targets": [
+        ["id=name", "id"],
+        ["name=name", "name"],
+        ["css=#name", "css:finder"],
+        ["xpath=//input[@id='name']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "2Hutton2"
+    }, {
+      "id": "cc54f190-ca91-42e9-bfaa-f659cf745427",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "xpath=//p[contains(.,'Name must contain only letters and spaces.')]",
+      "targets": [
+        ["css=.mt-1", "css:finder"],
+        ["xpath=//form/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Name must contain only letters and spaces.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "dc35204c-38e2-4c91-a660-2bb0b0f90431",
+      "comment": "",
+      "command": "type",
+      "target": "id=name",
+      "targets": [
+        ["id=name", "id"],
+        ["name=name", "name"],
+        ["css=#name", "css:finder"],
+        ["xpath=//input[@id='name']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Hutton"
+    }, {
+      "id": "46b34178-6937-4db7-8c0f-d3e424cac494",
+      "comment": "",
+      "command": "verifyElementNotPresent",
+      "target": "xpath=//p[contains(.,'Name must contain only letters and spaces.')]",
+      "targets": [
+        ["css=.mt-1", "css:finder"],
+        ["xpath=//form/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Name must contain only letters and spaces.')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "9487222f-b79d-4e6d-bb51-6e7fa93b73e6",
+    "name": "Signup_SameEmail",
+    "commands": [{
+      "id": "36b48e4d-eaf4-4910-8e21-f79e31f25093",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9cb45757-be24-4b91-8c60-afdd5c5078c6",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1177x1238",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e044c033-6c21-44af-ad81-e4b6ec291cef",
+      "comment": "",
+      "command": "click",
+      "target": "css=.w-auto",
+      "targets": [
+        ["css=.w-auto", "css:finder"],
+        ["xpath=//img[@alt='PrepSmart Logo']", "xpath:img"],
+        ["xpath=//img", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c0a09552-c28d-49d5-8985-b3792a4792b0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.h-10:nth-child(2)",
+      "targets": [
+        ["linkText=Sign Up", "linkText"],
+        ["css=.h-10:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Sign Up')]", "xpath:link"],
+        ["xpath=(//a[contains(@href, '/sign-up')])[2]", "xpath:href"],
+        ["xpath=//main/div[2]/a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Sign Up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "248d5d6b-46b0-4abf-9d1f-e6f564b8a9e9",
+      "comment": "",
+      "command": "type",
+      "target": "name=email",
+      "targets": [
+        ["name=email", "name"],
+        ["css=.h-10:nth-child(2)", "css:finder"],
+        ["xpath=//input[@name='email']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "huttonledingham@gmail.com"
+    }, {
+      "id": "f1e0b8a5-0882-4abb-9115-7acd40f0ebdd",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [
+        ["name=password", "name"],
+        ["css=.flex:nth-child(4)", "css:finder"],
+        ["xpath=//input[@name='password']", "xpath:attributes"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": "testing"
+    }, {
+      "id": "1643ab03-0c79-4607-abb4-19a63b513118",
+      "comment": "",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'Sign up')]",
+      "targets": [
+        ["css=.inline-flex:nth-child(5)", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Sign up')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "200cfb46-7640-4022-b7e8-8fc8240decb5",
+      "comment": "",
+      "command": "waitForElementPresent",
+      "target": "css=.text-destructive-foreground",
+      "targets": [
+        ["css=.text-destructive-foreground", "css:finder"],
+        ["xpath=//div[2]/div", "xpath:position"]
+      ],
+      "value": "30000"
+    }]
   }],
   "suites": [{
     "id": "09f993e4-5014-472e-9f1c-de568bce1b7a",
@@ -3179,14 +3567,14 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 60,
-    "tests": ["1ade78f6-4d42-46fc-8cdb-3a866104c0b0", "49bb6a80-3030-4803-9a1f-4ab7fda70e75", "3669d7dd-3380-4636-9cdb-d894d3ddea61", "edaa251a-c24f-4211-b43d-25f5cbc23ee4", "6b79ebf3-3953-4fc9-8700-04cc69c27469", "ebdd38f9-6f17-49c5-8ebb-925a90c7826a"]
+    "tests": ["1ade78f6-4d42-46fc-8cdb-3a866104c0b0", "49bb6a80-3030-4803-9a1f-4ab7fda70e75", "3669d7dd-3380-4636-9cdb-d894d3ddea61", "edaa251a-c24f-4211-b43d-25f5cbc23ee4", "6b79ebf3-3953-4fc9-8700-04cc69c27469", "ebdd38f9-6f17-49c5-8ebb-925a90c7826a", "9487222f-b79d-4e6d-bb51-6e7fa93b73e6"]
   }, {
     "id": "add71695-c22e-4d31-95c5-65f75f0f87a3",
     "name": "GuestMealPlan",
     "persistSession": false,
     "parallel": false,
     "timeout": 60,
-    "tests": ["6e336a65-28f3-4ebd-bb70-edc41ddb46ab", "a626c846-53b9-497b-ab0a-6c511202cc3e", "3e08d2fa-cd8b-4e70-a101-9d74ec7e6150", "c169e281-7a85-441c-b52d-8b6d77e6b7b5", "737766b2-a6cb-49a7-a3a2-542f7962d40e", "e56add3f-7c1b-4787-8434-8331d6bdc65b"]
+    "tests": ["6e336a65-28f3-4ebd-bb70-edc41ddb46ab", "a626c846-53b9-497b-ab0a-6c511202cc3e", "3e08d2fa-cd8b-4e70-a101-9d74ec7e6150", "c169e281-7a85-441c-b52d-8b6d77e6b7b5", "737766b2-a6cb-49a7-a3a2-542f7962d40e", "e56add3f-7c1b-4787-8434-8331d6bdc65b", "59ab7a60-7b22-4f9a-bdd8-614303db4ff2", "76507ab2-88d1-43fe-ad51-8cf68e9e1d76"]
   }],
   "urls": ["https://prep-smart.vercel.app/"],
   "plugins": []
