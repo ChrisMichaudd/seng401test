@@ -103,6 +103,11 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   // Add validation function
   const validateField = (name: string, value: any): string | undefined => {
     switch (name) {
+      case "name":
+        if (!/^[a-zA-Z\s]+$/.test(value)) return "Name must contain only letters and spaces.";
+        if (value.trim().length === 0) return "Please enter a name.";
+        return undefined;
+
       case "age":
         if (!/^\d+$/.test(value)) return "Age must be a whole number.";
         if (value < 10 || value > 120) return "Please enter a valid age.";
