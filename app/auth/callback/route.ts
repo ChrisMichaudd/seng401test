@@ -19,6 +19,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${redirectTo}`);
   }
 
-  // URL to redirect to after sign up process completes
-  return NextResponse.redirect("https://prep-smart.vercel.app/sign-in");
+  // Default redirect to protected area after successful verification
+  return NextResponse.redirect(`${origin}/sign-in`);
 }

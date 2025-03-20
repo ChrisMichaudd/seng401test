@@ -23,7 +23,7 @@ export const signUpAction = async (formData: FormData) => {
     email,
     password,
     options: {
-      emailRedirectTo: `https://prep-smart.vercel.app/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback?redirect_to=/sign-in`,
     },
   });
 
