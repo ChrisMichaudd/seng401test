@@ -180,18 +180,33 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       { name: 'weekly_budget', label: 'Weekly Budget' },
     ];
 
-
     for (const field of requiredFields) {
       const value = formData[field.name as keyof typeof formData];
-      const error = validateField(field.name, value);
-      
-      if (!value || error) {
-        newErrors[field.name as keyof FormErrors] = error || `${field.label} is required`;
+      if (!value) {
+        newErrors[field.name as keyof FormErrors] = `${field.label} is required`;
         isValid = false;
+        // Focus on the first empty required field
+        const element = document.getElementById(field.name);
+        if (element && !document.activeElement) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      } else {
+        // Only validate non-empty fields
+        const error = validateField(field.name, value);
+        if (error) {
+          newErrors[field.name as keyof FormErrors] = error;
+          isValid = false;
+        }
       }
     }
 
     setFormErrors(newErrors);
+    
+    if (!isValid) {
+      setStatusMessage("Please fill in all required fields");
+    }
+    
     return isValid;
   };
 
@@ -201,8 +216,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
     setStatusMessage("");
 
     if (!isFormValid()) {
-      setStatusMessage("Please fix the errors before saving");
-      return;
+      return; // isFormValid now sets its own status message
     }
 
     // Convert weight if needed
@@ -226,7 +240,6 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         ...formData,
         weight: weightInKg,
         height: heightInCm,
-        // ... rest of your update fields
       })
       .eq("meal_id", mealId)
       .single();
@@ -265,9 +278,10 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGeneratePlan = async () => {
+    setStatusMessage("");
+    
     if (!isFormValid()) {
-      setStatusMessage("Please fix the errors before generating a meal plan");
-      return;
+      return; // isFormValid now sets its own status message
     }
 
     // First, save current form data
@@ -279,40 +293,24 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       ? convertFtInchesToCm(parseFloat(heightFeet), parseFloat(heightInches))
       : formData.height;
 
-    // Save to database first
-    const { error: saveError } = await supabase
-      .from("meal_plans")
-      .update({
-        ...formData,
-        weight: weightInKg,
-        height: heightInCm,
-      })
-      .eq("meal_id", mealId)
-      .single();
-
-    if (saveError) {
-      console.error("Save error:", saveError);
-      setStatusMessage("Failed to save your data. Please try again.");
-      return;
-    }
-
-    // Validate required fields
-    const { isValid, firstMissingField } = validateRequiredFields();
-    
-    if (!isValid && firstMissingField) {
-      const element = document.getElementById(firstMissingField);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        element.focus();
-      }
-      
-      setStatusMessage(`Please fill in your ${firstMissingField.replace('_', ' ')} before generating a plan.`);
-      return;
-    }
-
-    // If valid, call Gemini API
     try {
       setIsGenerating(true);
+      
+      // Save to database first
+      const { error: saveError } = await supabase
+        .from("meal_plans")
+        .update({
+          ...formData,
+          weight: weightInKg,
+          height: heightInCm,
+        })
+        .eq("meal_id", mealId)
+        .single();
+
+      if (saveError) {
+        throw new Error("Failed to save your data");
+      }
+
       setStatusMessage("Generating your meal plan...");
       
       const response = await fetch('/api/gemini/meal-plan', {
@@ -337,9 +335,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
         .single();
 
       if (updateError) {
-        console.error("Error saving AI response:", updateError);
-        setStatusMessage("Generated plan but failed to save. Please try again.");
-        return;
+        throw new Error("Generated plan but failed to save");
       }
 
       // Redirect to the view page
@@ -347,7 +343,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       
     } catch (error) {
       console.error('Error:', error);
-      setStatusMessage("Failed to generate meal plan. Please try again.");
+      setStatusMessage(error instanceof Error ? error.message : "Failed to generate meal plan. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -409,7 +405,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* NAME */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="name">
-          Name
+          Name <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -428,7 +424,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* AGE */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="age">
-          Age
+          Age <span className="text-red-500">*</span>
         </label>
         <input
           id="age"
@@ -448,7 +444,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* GENDER */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="gender">
-          Gender
+          Gender <span className="text-red-500">*</span>
         </label>
         <input
           id="gender"
@@ -468,7 +464,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="weight">
-            Weight
+            Weight <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
             <input
@@ -499,7 +495,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* HEIGHT */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600">
-          Height
+          Height <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2 items-end">
           {heightUnit === 'cm' ? (
@@ -565,7 +561,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* ACTIVITY LEVEL */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600">
-          Activity Level
+          Activity Level <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-2">
           {[
@@ -709,7 +705,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* TRANSFORMATION GOAL */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600">
-          Transformation Goal
+          Transformation Goal <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mt-2">
           {[
@@ -750,7 +746,7 @@ export default function MealPlanFormClient({ mealId, initialData }: MealPlanForm
       {/* BUDGET */}
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-600" htmlFor="weekly_budget">
-          Weekly Budget
+          Weekly Budget <span className="text-red-500">*</span>
         </label>
         <input
           id="weekly_budget"
