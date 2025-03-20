@@ -19,7 +19,8 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  // First attempt to sign up
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -27,16 +28,26 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
+  // If the response includes user data but also includes identities array
+  // it means the user already exists (email exists in the system)
+  if (data?.user && !data.user.identities?.length) {
+    return encodedRedirect(
+      "error",
+      "/sign-in",
+      "An account with this email already exists. Please sign in with your existing credentials. If you don't remember your password, you can reset it."
+    );
+  }
+
   if (error) {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
-  }
+  } 
+  
+  return encodedRedirect(
+    "success",
+    "/sign-up",
+    "Thanks for signing up! Please check your email for a verification link.",
+  );
 };
 
 export const signInAction = async (formData: FormData) => {
