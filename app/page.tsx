@@ -33,7 +33,7 @@ export default async function Home() {
           </Button>
         </div>
 
-        <div className="w-[90vw] sm:w-auto mx-auto">
+        <div className="w-[90vw] sm:w-auto mx-auto flex justify-center">
           <GuestContinueButton />
         </div>
       </main>
