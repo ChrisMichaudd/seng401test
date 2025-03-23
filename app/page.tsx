@@ -9,16 +9,22 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <main className="flex flex-col items-center justify-start px-4 space-y-6 mt-[-50px]">
-        <div className="flex flex-col items-center space-y-2">
-          <Image src={prepSmartLogo} alt="PrepSmart Logo" width={150} height={150} />
+      <main className="flex flex-col items-center justify-start w-full px-4 space-y-4 sm:space-y-6 mt-[-25px] sm:mt-[-50px]">
+        <div className="flex flex-col items-center space-y-2 w-[90vw] sm:w-auto mx-auto">
+          <Image 
+            src={prepSmartLogo} 
+            alt="PrepSmart Logo" 
+            width={100} 
+            height={100}
+            className="w-[100px] sm:w-[150px] h-auto"
+          />
         </div>
 
-        <h2 className="text-center text-primary font-semibold text-3xl">
+        <h2 className="text-center text-primary font-semibold text-2xl sm:text-3xl w-[90vw] sm:w-auto mx-auto">
           Get Started Now!
         </h2>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-[90vw] sm:w-auto mx-auto justify-center">
           <Button asChild variant="outline">
             <Link href="/sign-in">Sign In</Link>
           </Button>
@@ -27,7 +33,9 @@ export default async function Home() {
           </Button>
         </div>
 
-        <GuestContinueButton />
+        <div className="w-[90vw] sm:w-auto mx-auto">
+          <GuestContinueButton />
+        </div>
       </main>
     </>
   );
